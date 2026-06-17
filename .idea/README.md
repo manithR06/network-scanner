@@ -29,7 +29,7 @@ A professional web-based network security scanner built with Python and Flask.
 
 ### 1. Clone the repo
 
-git clone https://github.com/YOUR_USERNAME/network-scanner.git
+git clone https://github.com/manithR06/network-scanner.git
 cd network-scanner
 
 ### 2. Install dependencies
