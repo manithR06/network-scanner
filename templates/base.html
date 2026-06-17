@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Network Security Scanner{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <!-- Your custom CSS -->
+    <link
+      href="{{ url_for('static', filename='css/style.css') }}"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav
+      class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary"
+    >
+      <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="/">
+          <i class="bi bi-shield-lock-fill text-success me-2"></i>
+          NetScanner
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.path == '/' %}active{% endif %}"
+                href="/"
+              >
+                <i class="bi bi-house me-1"></i>Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.path == '/history' %}active{% endif %}"
+                href="/history"
+              >
+                <i class="bi bi-clock-history me-1"></i>Scan History
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.path == '/schedule' %}active{% endif %}"
+                href="/schedule"
+              >
+                <i class="bi bi-calendar-check me-1"></i>Scheduled
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- FLASH MESSAGES -->
+    <div class="container-fluid mt-3">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show">
+        {{ message }}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+        ></button>
+      </div>
+      {% endfor %} {% endif %} {% endwith %}
+    </div>
+
+    <!-- PAGE CONTENT -->
+    <main class="container-fluid py-4">{% block content %}{% endblock %}</main>
+
+    <!-- FOOTER -->
+    <footer
+      class="bg-dark text-secondary text-center py-3 mt-5 border-top border-secondary"
+    >
+      <small
+        ><i class="bi bi-shield-lock me-1"></i>NetScanner — For authorized use
+        only</small
+      >
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Your custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

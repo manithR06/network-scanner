@@ -1,0 +1,187 @@
+{% extends "base.html" %} {% block title %}Scheduled Scans — NetScanner{%
+endblock %} {% block content %}
+<div class="row mb-4">
+  <div class="col">
+    <h2 class="text-white fw-bold">
+      <i class="bi bi-calendar-check me-2 text-info"></i>Scheduled Scans
+    </h2>
+    <p class="text-secondary">Automatically scan targets on a schedule</p>
+  </div>
+</div>
+
+<!-- ADD SCHEDULE FORM -->
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card bg-dark border-secondary">
+      <div class="card-header border-secondary">
+        <h5 class="text-white mb-0">
+          <i class="bi bi-plus-circle me-2 text-success"></i>Add Scheduled Scan
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label class="form-label text-secondary">Target IP or Range</label>
+          <input
+            type="text"
+            id="sched-target"
+            class="form-control bg-dark text-white border-secondary"
+            placeholder="e.g. 192.168.1.0/24"
+          />
+        </div>
+        <div class="mb-3">
+          <label class="form-label text-secondary">Scan Type</label>
+          <select
+            id="sched-type"
+            class="form-select bg-dark text-white border-secondary"
+          >
+            <option value="basic">Basic</option>
+            <option value="full">Full</option>
+            <option value="ping">Ping Only</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label text-secondary">Run Every</label>
+          <select
+            id="sched-interval"
+            class="form-select bg-dark text-white border-secondary"
+          >
+            <option value="1">Every 1 hour</option>
+            <option value="6">Every 6 hours</option>
+            <option value="12">Every 12 hours</option>
+            <option value="24" selected>Every 24 hours</option>
+            <option value="168">Every week</option>
+          </select>
+        </div>
+        <button class="btn btn-success w-100" onclick="addSchedule()">
+          <i class="bi bi-calendar-plus me-2"></i>Add Schedule
+        </button>
+        <div id="sched-msg" class="mt-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INFO CARD -->
+  <div class="col-md-6">
+    <div class="card bg-dark border-secondary h-100">
+      <div class="card-header border-secondary">
+        <h5 class="text-white mb-0">
+          <i class="bi bi-info-circle me-2 text-warning"></i>How It Works
+        </h5>
+      </div>
+      <div class="card-body text-secondary">
+        <ul class="list-unstyled">
+          <li class="mb-2">
+            <i class="bi bi-check-circle text-success me-2"></i>
+            Scans run automatically in the background
+          </li>
+          <li class="mb-2">
+            <i class="bi bi-check-circle text-success me-2"></i>
+            Results saved to scan history automatically
+          </li>
+          <li class="mb-2">
+            <i class="bi bi-check-circle text-success me-2"></i>
+            Email alert sent if high/critical hosts found
+          </li>
+          <li class="mb-2">
+            <i class="bi bi-check-circle text-success me-2"></i>
+            Configure email in config.py
+          </li>
+          <li class="mb-2">
+            <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+            Schedules reset when app restarts
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CURRENT SCHEDULES -->
+<div class="card bg-dark border-secondary">
+  <div class="card-header border-secondary">
+    <h5 class="text-white mb-0">
+      <i class="bi bi-list-check me-2 text-info"></i>Active Schedules
+    </h5>
+  </div>
+  <div class="card-body p-0" id="schedules-container">
+    {% if scheduled %}
+    <table class="table table-dark table-hover mb-0">
+      <thead>
+        <tr class="border-secondary">
+          <th>Target</th>
+          <th>Scan Type</th>
+          <th>Interval</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="schedules-table">
+        {% for s in scheduled %}
+        <tr id="row-{{ s.job_id }}">
+          <td class="text-white">{{ s.target }}</td>
+          <td><span class="badge bg-secondary">{{ s.scan_type }}</span></td>
+          <td class="text-secondary">Every {{ s.interval_hours }}h</td>
+          <td>
+            <button
+              class="btn btn-sm btn-outline-danger"
+              onclick="removeSchedule('{{ s.job_id }}')"
+            >
+              <i class="bi bi-trash"></i> Remove
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="text-center py-5 text-secondary" id="no-schedules">
+      <i class="bi bi-calendar-x fs-1"></i>
+      <p class="mt-3">No scheduled scans yet. Add one above.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %} {% block scripts %}
+<script>
+  function addSchedule() {
+    const target = document.getElementById("sched-target").value.trim();
+    const scanType = document.getElementById("sched-type").value;
+    const interval = document.getElementById("sched-interval").value;
+    const msgDiv = document.getElementById("sched-msg");
+
+    if (!target) {
+      msgDiv.innerHTML =
+        '<div class="alert alert-danger py-2">Please enter a target</div>';
+      return;
+    }
+
+    fetch("/api/schedule", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        target,
+        scan_type: scanType,
+        interval_hours: interval,
+      }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        msgDiv.innerHTML =
+          '<div class="alert alert-success py-2">Schedule added!</div>';
+        setTimeout(() => location.reload(), 1000);
+      })
+      .catch(() => {
+        msgDiv.innerHTML =
+          '<div class="alert alert-danger py-2">Failed to add schedule</div>';
+      });
+  }
+
+  function removeSchedule(jobId) {
+    if (!confirm("Remove this scheduled scan?")) return;
+    fetch("/api/schedule/" + jobId + "/delete", { method: "DELETE" })
+      .then((r) => r.json())
+      .then(() => {
+        document.getElementById("row-" + jobId).remove();
+      });
+  }
+</script>
+{% endblock %}

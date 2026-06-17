@@ -1,0 +1,78 @@
+/* ── Global ── */
+body {
+  background-color: #0d1117;
+  color: #c9d1d9;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+/* ── Cards ── */
+.card {
+  border-radius: 10px;
+  transition: border-color 0.2s;
+}
+.card:hover {
+  border-color: #30363d !important;
+}
+
+/* ── Tables ── */
+.table-dark {
+  --bs-table-bg: transparent;
+}
+.table-dark td,
+.table-dark th {
+  border-color: #21262d;
+  vertical-align: middle;
+}
+
+/* ── Navbar ── */
+.navbar-brand {
+  font-size: 1.3rem;
+  letter-spacing: 0.5px;
+}
+
+/* ── Accordion ── */
+.accordion-button::after {
+  filter: invert(1);
+}
+.accordion-button:not(.collapsed) {
+  background-color: #161b22 !important;
+  color: #58a6ff !important;
+  box-shadow: none;
+}
+
+/* ── Badges ── */
+.badge {
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+/* ── Forms ── */
+.form-control:focus,
+.form-select:focus {
+  background-color: #161b22;
+  border-color: #388bfd;
+  color: #c9d1d9;
+  box-shadow: 0 0 0 3px rgba(56, 139, 253, 0.15);
+}
+.form-control::placeholder {
+  color: #484f58;
+}
+
+/* ── Progress bar ── */
+.progress {
+  height: 6px;
+  border-radius: 3px;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0d1117;
+}
+::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 3px;
+}
